@@ -104,7 +104,8 @@ if not _RELEASE:
 
     # Create an instance of our component with a constant `name` arg, and
     # print its output value.
-    explanation = select_explain()
-    if len(explanation) != 0:
-        st.markdown("## Explanation")
-        st.markdown(explanation)
+    with st.sidebar:
+        explanation = select_explain()
+        if len(explanation) != 0:
+            st.markdown("## Explanation")
+            st.markdown(explanation)
