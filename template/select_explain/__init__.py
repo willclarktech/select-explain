@@ -48,7 +48,7 @@ _component_func = components.declare_component("select_explain", path=build_dir)
 # `declare_component` and call it done. The wrapper allows us to customize
 # our component's API: we can pre-process its input args, post-process its
 # output value, and add a docstring for users.
-def select_explain(key=None):
+def select_explain(model=None):
     """Create a new instance of "select_explain".
 
     Parameters
@@ -75,7 +75,7 @@ def select_explain(key=None):
     #
     # "default" is a special argument that specifies the initial return
     # value of the component before the user has interacted with it.
-    component_value = _component_func(key=key, default="")
+    component_value = _component_func(model=model, default="")
 
     # We could modify the value returned from the component if we wanted.
     # There's no need to do this in our simple example - but it's an option.
@@ -105,7 +105,9 @@ if not _RELEASE:
     # Create an instance of our component with a constant `name` arg, and
     # print its output value.
     with st.sidebar:
-        explanation = select_explain()
+        model_options = ["gpt2", "microsoft/DialoGPT-medium"]
+        model = st.selectbox("Dialog model", model_options)
+        explanation = select_explain(model=model)
         if len(explanation) != 0:
             st.markdown("## Explanation")
             st.markdown(explanation)

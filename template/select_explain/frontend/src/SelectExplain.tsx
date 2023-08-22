@@ -10,11 +10,20 @@ interface State {
   isFocused: boolean
 }
 
+enum Model {
+  Gpt2 = "gpt2",
+  DialoGptMedium = "microsoft/DialoGPT-medium",
+}
+
+interface Args {
+  readonly model: Model
+}
+
 /**
  * This is a React-based component template. The `render()` function is called
  * automatically when your component should be re-rendered.
  */
-class SelectExplain extends StreamlitComponentBase<State> {
+class SelectExplain extends StreamlitComponentBase<State, Args> {
   public state = { explanation: "", isFocused: false }
 
   public render = (): ReactNode => {
@@ -53,26 +62,29 @@ class SelectExplain extends StreamlitComponentBase<State> {
 
   private onClicked = async (): Promise<void> => {
     const selectedText = window.top?.getSelection()?.toString() ?? ""
-    if (selectedText === "") {
+    if (!selectedText) {
+      return
+    }
+    const { model } = this.props.args
+    if (!model) {
       return
     }
 
     const prompt = `Explain the following ML term: ${selectedText}.\n`
-    const response = await fetch(
-      // TODO: Use a better model
-      "https://api-inference.huggingface.co/models/gpt2",
-      {
-        headers: {
-          // TODO: Get auth token from user?
-          // Authorization: `Bearer ${process.env.HF_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-        body: JSON.stringify({ inputs: prompt }),
-      }
-    )
+    const url = `https://api-inference.huggingface.co/models/${model}`
+    const response = await fetch(url, {
+      headers: {
+        // TODO: Get auth token from user?
+        // Authorization: `Bearer ${process.env.HF_TOKEN}`,
+        "Content-Type": "application/json",
+      },
+      method: "POST",
+      body: JSON.stringify({ inputs: prompt }),
+    })
     const responseJson = await response.json()
-    const generatedText = responseJson[0]?.generated_text ?? ""
+    // TODO: Is this generalizable?
+    const generatedText =
+      responseJson.generated_text ?? responseJson[0]?.generated_text ?? ""
     const explanation = generatedText.startsWith(prompt)
       ? generatedText.slice(prompt.length)
       : generatedText
