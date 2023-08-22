@@ -75,7 +75,7 @@ def select_explain(model=None):
     #
     # "default" is a special argument that specifies the initial return
     # value of the component before the user has interacted with it.
-    component_value = _component_func(model=model, default="")
+    component_value = _component_func(model=model, default=["", ""])
 
     # We could modify the value returned from the component if we wanted.
     # There's no need to do this in our simple example - but it's an option.
@@ -89,7 +89,7 @@ if not _RELEASE:
     import streamlit as st
 
     st.markdown("""
-    ## Some text you can select to test out the highlight/explain component:
+    ## Some text you can select to test out the select/explain component:
 
     - regularization
     - normalization
@@ -107,7 +107,10 @@ if not _RELEASE:
     with st.sidebar:
         model_options = ["gpt2", "microsoft/DialoGPT-medium"]
         model = st.selectbox("Dialog model", model_options)
-        explanation = select_explain(model=model)
+        selection, explanation = select_explain(model=model)
+        if len(selection) != 0:
+            st.markdown("## Selection")
+            st.text(selection)
         if len(explanation) != 0:
             st.markdown("## Explanation")
             st.markdown(explanation)

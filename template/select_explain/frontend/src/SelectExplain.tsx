@@ -54,7 +54,7 @@ class SelectExplain extends StreamlitComponentBase<State, Args> {
           onFocus={this._onFocus}
           onBlur={this._onBlur}
         >
-          Explain highlighted text
+          Explain selected text
         </button>
       </span>
     )
@@ -92,7 +92,7 @@ class SelectExplain extends StreamlitComponentBase<State, Args> {
     // TODO: Handle async order effects properly
     this.setState(
       () => ({ explanation }),
-      () => Streamlit.setComponentValue(this.state.explanation)
+      () => Streamlit.setComponentValue([selectedText, this.state.explanation])
     )
   }
 
